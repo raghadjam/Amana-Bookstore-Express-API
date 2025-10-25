@@ -1,4 +1,5 @@
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
 const PORT = process.env.PORT || 3000
 
@@ -11,6 +12,10 @@ const reviewsData = require('./data/reviews.json')
 
 const books = booksData.books
 const reviews = reviewsData.reviews
+
+const logStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' })
+app.use(morgan('combined', { stream: logStream })) // write logs to log.txt
+app.use(morgan('dev')) // optional: log to console
 
 app.use(express.json())
 
@@ -123,6 +128,6 @@ app.post('/books/:id/reviews', authenticate, (req, res) => {
   res.status(201).json({ message: "Review added successfully", review: newReview })
 })
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`)
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`)
 })
